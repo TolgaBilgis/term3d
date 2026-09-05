@@ -7,5 +7,7 @@ typedef struct {
 
 Mat4 mat4_identity(void);
 Mat4 mat4_multiply(Mat4 a, Mat4 b);
+Mat4 mat4_translation(float x, float y, float z);
+Mat4 mat4_scale(float x, float y, float z);
 
 #endif
