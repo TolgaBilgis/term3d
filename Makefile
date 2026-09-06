@@ -1,5 +1,6 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Wpedantic -O2
+LDLIBS ?= -lm
 
 TARGET := term3d
 SRC := src/main.c src/vec3.c src/mat4.c
@@ -9,7 +10,7 @@ SRC := src/main.c src/vec3.c src/mat4.c
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDLIBS)
 
 run: $(TARGET)
 	./$(TARGET)

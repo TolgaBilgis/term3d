@@ -1,5 +1,7 @@
 #include "mat4.h"
 
+#include <math.h>
+
 Mat4 mat4_identity(void)
 {
     Mat4 result = {0};
@@ -41,5 +43,44 @@ Mat4 mat4_scale(float x, float y, float z)
     result.m[0][0] = x;
     result.m[1][1] = y;
     result.m[2][2] = z;
+    return result;
+}
+
+Mat4 mat4_rotation_x(float radians)
+{
+    const float c = cosf(radians);
+    const float s = sinf(radians);
+    Mat4 result = mat4_identity();
+
+    result.m[1][1] = c;
+    result.m[1][2] = -s;
+    result.m[2][1] = s;
+    result.m[2][2] = c;
+    return result;
+}
+
+Mat4 mat4_rotation_y(float radians)
+{
+    const float c = cosf(radians);
+    const float s = sinf(radians);
+    Mat4 result = mat4_identity();
+
+    result.m[0][0] = c;
+    result.m[0][2] = s;
+    result.m[2][0] = -s;
+    result.m[2][2] = c;
+    return result;
+}
+
+Mat4 mat4_rotation_z(float radians)
+{
+    const float c = cosf(radians);
+    const float s = sinf(radians);
+    Mat4 result = mat4_identity();
+
+    result.m[0][0] = c;
+    result.m[0][1] = -s;
+    result.m[1][0] = s;
+    result.m[1][1] = c;
     return result;
 }
