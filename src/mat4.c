@@ -85,6 +85,31 @@ Mat4 mat4_rotation_z(float radians)
     return result;
 }
 
+Mat4 mat4_look_at(Vec3 eye, Vec3 target, Vec3 up)
+{
+    const Vec3 forward = vec3_normalize(vec3_sub(target, eye));
+    const Vec3 right = vec3_normalize(vec3_cross(forward, up));
+    const Vec3 camera_up = vec3_cross(right, forward);
+    Mat4 result = mat4_identity();
+
+    result.m[0][0] = right.x;
+    result.m[0][1] = right.y;
+    result.m[0][2] = right.z;
+    result.m[0][3] = -vec3_dot(right, eye);
+
+    result.m[1][0] = camera_up.x;
+    result.m[1][1] = camera_up.y;
+    result.m[1][2] = camera_up.z;
+    result.m[1][3] = -vec3_dot(camera_up, eye);
+
+    result.m[2][0] = -forward.x;
+    result.m[2][1] = -forward.y;
+    result.m[2][2] = -forward.z;
+    result.m[2][3] = vec3_dot(forward, eye);
+
+    return result;
+}
+
 Vec3 mat4_transform_point(Mat4 matrix, Vec3 point)
 {
     return (Vec3){
