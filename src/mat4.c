@@ -110,6 +110,19 @@ Mat4 mat4_look_at(Vec3 eye, Vec3 target, Vec3 up)
     return result;
 }
 
+Mat4 mat4_perspective(float fov_y_radians, float aspect, float near_plane, float far_plane)
+{
+    const float f = 1.0f / tanf(fov_y_radians * 0.5f);
+    Mat4 result = {0};
+
+    result.m[0][0] = f / aspect;
+    result.m[1][1] = f;
+    result.m[2][2] = (far_plane + near_plane) / (near_plane - far_plane);
+    result.m[2][3] = (2.0f * far_plane * near_plane) / (near_plane - far_plane);
+    result.m[3][2] = -1.0f;
+    return result;
+}
+
 Vec3 mat4_transform_point(Mat4 matrix, Vec3 point)
 {
     return (Vec3){

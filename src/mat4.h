@@ -15,6 +15,7 @@ Mat4 mat4_rotation_x(float radians);
 Mat4 mat4_rotation_y(float radians);
 Mat4 mat4_rotation_z(float radians);
 Mat4 mat4_look_at(Vec3 eye, Vec3 target, Vec3 up);
+Mat4 mat4_perspective(float fov_y_radians, float aspect, float near_plane, float far_plane);
 Vec3 mat4_transform_point(Mat4 matrix, Vec3 point);
 
 #endif
