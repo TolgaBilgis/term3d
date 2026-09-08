@@ -134,3 +134,24 @@ Vec3 mat4_transform_point(Mat4 matrix, Vec3 point)
             matrix.m[2][2] * point.z + matrix.m[2][3]
     };
 }
+
+bool mat4_project_point(Mat4 matrix, Vec3 point, Vec3 *projected)
+{
+    const float x = matrix.m[0][0] * point.x + matrix.m[0][1] * point.y +
+        matrix.m[0][2] * point.z + matrix.m[0][3];
+    const float y = matrix.m[1][0] * point.x + matrix.m[1][1] * point.y +
+        matrix.m[1][2] * point.z + matrix.m[1][3];
+    const float z = matrix.m[2][0] * point.x + matrix.m[2][1] * point.y +
+        matrix.m[2][2] * point.z + matrix.m[2][3];
+    const float w = matrix.m[3][0] * point.x + matrix.m[3][1] * point.y +
+        matrix.m[3][2] * point.z + matrix.m[3][3];
+
+    if (!projected || fabsf(w) < 1e-6f) {
+        return false;
+    }
+
+    projected->x = x / w;
+    projected->y = y / w;
+    projected->z = z / w;
+    return true;
+}
