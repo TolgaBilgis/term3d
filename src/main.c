@@ -2,6 +2,7 @@
 
 #include "framebuffer.h"
 #include "mat4.h"
+#include "raster.h"
 #include "vec3.h"
 
 #define VIEW_WIDTH 64
@@ -25,13 +26,22 @@ int main(void)
         return 1;
     }
 
-    const Vec3 points[] = {
-        {-1.0f, -1.0f, -3.0f},
-        { 1.0f, -1.0f, -3.0f},
-        { 1.0f,  1.0f, -3.0f},
-        {-1.0f,  1.0f, -3.0f},
-        { 0.0f,  0.0f, -2.0f}
+    const Vec3 vertices[] = {
+        {-1.0f, -1.0f, -4.0f},
+        { 1.0f, -1.0f, -4.0f},
+        { 1.0f,  1.0f, -4.0f},
+        {-1.0f,  1.0f, -4.0f},
+        {-1.0f, -1.0f, -6.0f},
+        { 1.0f, -1.0f, -6.0f},
+        { 1.0f,  1.0f, -6.0f},
+        {-1.0f,  1.0f, -6.0f}
     };
+    const unsigned int edges[][2] = {
+        {0, 1}, {1, 2}, {2, 3}, {3, 0},
+        {4, 5}, {5, 6}, {6, 7}, {7, 4},
+        {0, 4}, {1, 5}, {2, 6}, {3, 7}
+    };
+    Vec3 projected[sizeof(vertices) / sizeof(vertices[0])];
     const Mat4 projection = mat4_perspective(
         1.0471975512f,
         (float)VIEW_WIDTH / (float)VIEW_HEIGHT,
@@ -39,11 +49,22 @@ int main(void)
         100.0f
     );
 
-    for (size_t i = 0; i < sizeof(points) / sizeof(points[0]); ++i) {
-        Vec3 projected;
-        if (mat4_project_point(projection, points[i], &projected)) {
-            framebuffer_put(&buffer, screen_x(projected.x), screen_y(projected.y), '*');
+    for (size_t i = 0; i < sizeof(vertices) / sizeof(vertices[0]); ++i) {
+        if (!mat4_project_point(projection, vertices[i], &projected[i])) {
+            framebuffer_free(&buffer);
+            return 1;
         }
+    }
+
+    for (size_t i = 0; i < sizeof(edges) / sizeof(edges[0]); ++i) {
+        const Vec3 a = projected[edges[i][0]];
+        const Vec3 b = projected[edges[i][1]];
+        raster_line(
+            &buffer,
+            screen_x(a.x), screen_y(a.y),
+            screen_x(b.x), screen_y(b.y),
+            '#'
+        );
     }
 
     framebuffer_present(&buffer);
