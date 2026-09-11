@@ -2,6 +2,7 @@
 
 #include "framebuffer.h"
 #include "mat4.h"
+#include "mesh.h"
 #include "raster.h"
 #include "vec3.h"
 
@@ -26,22 +27,9 @@ int main(void)
         return 1;
     }
 
-    const Vec3 vertices[] = {
-        {-1.0f, -1.0f, -4.0f},
-        { 1.0f, -1.0f, -4.0f},
-        { 1.0f,  1.0f, -4.0f},
-        {-1.0f,  1.0f, -4.0f},
-        {-1.0f, -1.0f, -6.0f},
-        { 1.0f, -1.0f, -6.0f},
-        { 1.0f,  1.0f, -6.0f},
-        {-1.0f,  1.0f, -6.0f}
-    };
-    const unsigned int edges[][2] = {
-        {0, 1}, {1, 2}, {2, 3}, {3, 0},
-        {4, 5}, {5, 6}, {6, 7}, {7, 4},
-        {0, 4}, {1, 5}, {2, 6}, {3, 7}
-    };
-    Vec3 projected[sizeof(vertices) / sizeof(vertices[0])];
+    const Mesh *mesh = mesh_cube();
+    Vec3 projected[mesh->vertex_count];
+    const Mat4 model = mat4_translation(0.0f, 0.0f, -5.0f);
     const Mat4 projection = mat4_perspective(
         1.0471975512f,
         (float)VIEW_WIDTH / (float)VIEW_HEIGHT,
@@ -49,16 +37,18 @@ int main(void)
         100.0f
     );
 
-    for (size_t i = 0; i < sizeof(vertices) / sizeof(vertices[0]); ++i) {
-        if (!mat4_project_point(projection, vertices[i], &projected[i])) {
+    for (size_t i = 0; i < mesh->vertex_count; ++i) {
+        const Vec3 world = mat4_transform_point(model, mesh->vertices[i]);
+        if (!mat4_project_point(projection, world, &projected[i])) {
             framebuffer_free(&buffer);
             return 1;
         }
     }
 
-    for (size_t i = 0; i < sizeof(edges) / sizeof(edges[0]); ++i) {
-        const Vec3 a = projected[edges[i][0]];
-        const Vec3 b = projected[edges[i][1]];
+    for (size_t i = 0; i < mesh->edge_count; ++i) {
+        const MeshEdge edge = mesh->edges[i];
+        const Vec3 a = projected[edge.a];
+        const Vec3 b = projected[edge.b];
         raster_line(
             &buffer,
             screen_x(a.x), screen_y(a.y),
