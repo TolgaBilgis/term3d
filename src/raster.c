@@ -27,3 +27,16 @@ void raster_line(Framebuffer *buffer, int x0, int y0, int x1, int y1, char glyph
         }
     }
 }
+
+void raster_triangle_wireframe(
+    Framebuffer *buffer,
+    int x0, int y0,
+    int x1, int y1,
+    int x2, int y2,
+    char glyph
+)
+{
+    raster_line(buffer, x0, y0, x1, y1, glyph);
+    raster_line(buffer, x1, y1, x2, y2, glyph);
+    raster_line(buffer, x2, y2, x0, y0, glyph);
+}

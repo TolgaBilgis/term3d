@@ -45,14 +45,16 @@ int main(void)
         }
     }
 
-    for (size_t i = 0; i < mesh->edge_count; ++i) {
-        const MeshEdge edge = mesh->edges[i];
-        const Vec3 a = projected[edge.a];
-        const Vec3 b = projected[edge.b];
-        raster_line(
+    for (size_t i = 0; i < mesh->triangle_count; ++i) {
+        const MeshTriangle triangle = mesh->triangles[i];
+        const Vec3 a = projected[triangle.a];
+        const Vec3 b = projected[triangle.b];
+        const Vec3 c = projected[triangle.c];
+        raster_triangle_wireframe(
             &buffer,
             screen_x(a.x), screen_y(a.y),
             screen_x(b.x), screen_y(b.y),
+            screen_x(c.x), screen_y(c.y),
             '#'
         );
     }
